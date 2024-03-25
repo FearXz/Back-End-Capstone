@@ -41,5 +41,8 @@ namespace Back_End_Capstone.Models
 
         [NotMapped]
         public string NomeCompleto => $"{Nome} {Cognome}";
+
+        // NAVIGATION PROPERTIES
+        public virtual ICollection<Ordini> Ordini { get; set; }
     }
 }

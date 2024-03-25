@@ -28,6 +28,12 @@ namespace Back_End_Capstone.Models
         public string CAP { get; set; }
 
         [Required]
+        public string Latitudine { get; set; }
+
+        [Required]
+        public string Longitudine { get; set; }
+
+        [Required]
         public string Telefono { get; set; }
 
         [Required]
@@ -43,5 +49,6 @@ namespace Back_End_Capstone.Models
         public virtual Azienda Azienda { get; set; }
         public virtual ICollection<ProdottoRistorante> ProdottiRistorante { get; set; }
         public virtual ICollection<IngredientiRistorante> IngredientiRistorante { get; set; }
+        public virtual ICollection<Ordini> Ordini { get; set; }
     }
 }

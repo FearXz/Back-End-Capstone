@@ -3,15 +3,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Back_End_Capstone.Models
 {
-    public class ProdottoRistorante
+    public class ProdottiAcquistati
     {
         // DB COLUMN
         [Key]
-        public int IdProdottoRistorante { get; set; }
+        public int IdProdottiAcquistati { get; set; }
 
         [Required]
-        [ForeignKey("Ristorante")]
-        public int IdRistorante { get; set; }
+        [ForeignKey("Ordine")]
+        public int IdOrdine { get; set; }
 
         [Required]
         public string NomeProdotto { get; set; }
@@ -19,12 +19,15 @@ namespace Back_End_Capstone.Models
         [Required]
         public double PrezzoProdotto { get; set; }
 
+        [Required]
+        public int Quantita { get; set; } = 1;
+
         // NULLABLE
         public string? DescrizioneProdotto { get; set; }
         public string? ImgProdotto { get; set; }
 
-        // NAVIGATION PROPERTY
-        public virtual Ristorante Ristorante { get; set; }
-        public virtual ICollection<IngredientiProdottoRistorante> IngredientiProdottoRistorante { get; set; }
+        // NAVIGATION PROPERTIES
+        public virtual Ordini Ordine { get; set; }
+        public virtual ICollection<IngredientiProdottoAcquistato> IngredientiProdottoAcquistato { get; set; }
     }
 }
