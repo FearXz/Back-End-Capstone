@@ -26,6 +26,10 @@ namespace Back_End_Capstone.Models
         public string? DescrizioneProdotto { get; set; }
         public string? ImgProdotto { get; set; }
 
+        // NOT MAPPED
+        [NotMapped]
+        public double PrezzoTotale => PrezzoProdotto * Quantita;
+
         // NAVIGATION PROPERTIES
         public virtual Ordini Ordine { get; set; }
         public virtual ICollection<IngredientiProdottoAcquistato> IngredientiProdottoAcquistato { get; set; }
