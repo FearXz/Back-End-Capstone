@@ -3,6 +3,7 @@
     public class UserRoles
     {
         public const string ADMIN = "ADMIN";
-        public const string USER = "USER";
+        public const string UTENTE = "UTENTE";
+        public const string AZIENDA = "AZIENDA";
     }
 }

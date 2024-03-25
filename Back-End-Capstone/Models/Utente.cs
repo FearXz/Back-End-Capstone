@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Back_End_Capstone.Data;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Back_End_Capstone.Models
@@ -21,14 +22,24 @@ namespace Back_End_Capstone.Models
         [Required]
         public string Cognome { get; set; }
 
-        [NotMapped]
-        public string NomeCompleto => $"{Nome} {Cognome}";
+        [Required]
+        public string Indirizzo { get; set; }
+
+        [Required]
+        public string Citta { get; set; }
+
+        [Required]
+        public string CAP { get; set; }
 
         [Required]
         public string Cellulare { get; set; }
 
         [Required]
-        public string Role { get; set; }
+        public string Role { get; set; } = UserRoles.UTENTE;
+
+        // NOT MAPPED
+
+        [NotMapped]
+        public string NomeCompleto => $"{Nome} {Cognome}";
     }
-}
 }
