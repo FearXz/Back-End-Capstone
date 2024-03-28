@@ -1,11 +1,11 @@
-﻿using Back_End_Capstone.Data;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Back_End_Capstone.Data;
 using Back_End_Capstone.Models;
 using Back_End_Capstone.ModelsDto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace Back_End_Capstone.Controllers
 {
@@ -22,9 +22,14 @@ namespace Back_End_Capstone.Controllers
             _db = db;
         }
 
-        [HttpPost("token")]
-        public IActionResult CreateToken([FromBody] LoginDto login)
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] LoginDto login)
         {
+            if (ModelState.IsValid == false)
+            {
+                return BadRequest();
+            }
+
             var utente = Authenticate(login);
 
             if (utente != null)
@@ -41,7 +46,9 @@ namespace Back_End_Capstone.Controllers
                             utente.Nome,
                             utente.Cognome,
                             utente.Email,
-                            utente.Cellulare,
+                            utente.Citta,
+                            utente.Indirizzo,
+                            utente.CAP,
                             utente.Role
                         }
                     }
@@ -49,6 +56,39 @@ namespace Back_End_Capstone.Controllers
             }
 
             return Unauthorized();
+        }
+
+        [HttpPost("register")]
+        public IActionResult Register([FromBody] RegistrationDto register)
+        {
+            if (ModelState.IsValid == false)
+            {
+                return BadRequest();
+            }
+
+            // voglio controllare se prima di inserire un utente, se esiste già un utente con la stessa email
+            var existingUser = _db.Utenti.FirstOrDefault(u => u.Email == register.Email);
+            if (existingUser != null)
+            {
+                return Conflict();
+            }
+
+            var user = new Utente
+            {
+                Nome = register.Nome,
+                Cognome = register.Cognome,
+                Email = register.Email,
+                Password = BCrypt.Net.BCrypt.HashPassword(register.Password).ToString(),
+                Cellulare = register.Cellulare,
+                Indirizzo = register.Indirizzo,
+                Citta = register.Citta,
+                CAP = register.CAP,
+            };
+
+            _db.Utenti.Add(user);
+            _db.SaveChanges();
+
+            return Ok();
         }
 
         private string BuildToken(Utente utente)
@@ -76,11 +116,9 @@ namespace Back_End_Capstone.Controllers
 
         private Utente Authenticate(LoginDto login)
         {
-            var user = _db.Utenti.FirstOrDefault(u =>
-                u.Email == login.Email && u.Password == login.Password
-            );
+            var user = _db.Utenti.FirstOrDefault(u => u.Email == login.Email);
 
-            if (user == null)
+            if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.Password))
             {
                 return null;
             }
@@ -91,8 +129,10 @@ namespace Back_End_Capstone.Controllers
                 Email = user.Email,
                 Nome = user.Nome,
                 Cognome = user.Cognome,
-                Cellulare = user.Cellulare,
                 Role = user.Role,
+                Indirizzo = user.Indirizzo,
+                Citta = user.Citta,
+                CAP = user.CAP,
             };
         }
     }

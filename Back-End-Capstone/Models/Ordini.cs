@@ -17,6 +17,24 @@ namespace Back_End_Capstone.Models
         [ForeignKey("Ristorante")]
         public int IdRistorante { get; set; }
 
+        [Required]
+        public string IndirizzoConsegna { get; set; }
+
+        [Required]
+        public DateTime DataOrdine { get; set; } = DateTime.Now;
+
+        [Required]
+        public TimeSpan OrarioConsegnaPrevista { get; set; }
+
+        [Required]
+        public bool IsOrdineEvaso { get; set; } = false;
+
+        [Required]
+        public bool IsOrdineConsegnato { get; set; } = false;
+
+        // NOT REQUIRED - NULLABLE
+        public string? Note { get; set; }
+
         // NOT MAPPED
         [NotMapped]
         public double PrezzoTotale { get; set; }

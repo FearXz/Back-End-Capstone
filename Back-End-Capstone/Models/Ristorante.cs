@@ -1,6 +1,6 @@
-﻿using Back_End_Capstone.Data;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Back_End_Capstone.Data;
 
 namespace Back_End_Capstone.Models
 {
@@ -37,6 +37,12 @@ namespace Back_End_Capstone.Models
         public string Telefono { get; set; }
 
         [Required]
+        public TimeSpan OrarioApertura { get; set; }
+
+        [Required]
+        public TimeSpan OrarioChiusura { get; set; }
+
+        [Required]
         public string Role { get; set; } = UserRoles.AZIENDA;
 
         // NULLABLE
@@ -44,11 +50,16 @@ namespace Back_End_Capstone.Models
         public string? ImgLogo { get; set; }
         public string? Descrizione { get; set; }
 
+        // NOT MAPPPED
+        [NotMapped]
+        public double Distanza { get; set; }
+
         // NAVIGATION PROPERTY
 
         public virtual Azienda Azienda { get; set; }
         public virtual ICollection<ProdottoRistorante> ProdottiRistorante { get; set; }
         public virtual ICollection<IngredientiRistorante> IngredientiRistorante { get; set; }
         public virtual ICollection<Ordini> Ordini { get; set; }
+        public virtual ICollection<CategorieRistorante> CategorieRistorante { get; set; }
     }
 }
