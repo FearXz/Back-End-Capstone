@@ -8,6 +8,25 @@ namespace Back_End_Capstone.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder
+                .Entity<IngredientiProdottoRistorante>()
+                .HasOne(i => i.ProdottoRistorante)
+                .WithMany(p => p.IngredientiProdottoRistorante)
+                .HasForeignKey(i => i.IdProdottoRistorante)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder
+                .Entity<IngredientiProdottoRistorante>()
+                .HasOne(i => i.IngredientiRistorante)
+                .WithMany(i => i.IngredientiProdottoRistorante)
+                .HasForeignKey(i => i.IdIngredientiRistorante)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
+
         // Aggiungi le tabelle con DbSet
 
         //clinica

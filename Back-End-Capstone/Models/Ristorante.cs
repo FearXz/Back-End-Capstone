@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Back_End_Capstone.Data;
 
@@ -47,7 +46,6 @@ namespace Back_End_Capstone.Models
         public string Role { get; set; } = UserRoles.AZIENDA;
 
         [Required]
-        [DefaultValue(true)]
         public bool IsAttivo { get; set; } = true;
 
         // NULLABLE

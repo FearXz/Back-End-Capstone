@@ -14,14 +14,13 @@ namespace Back_End_Capstone.Models
         public int IdProdottoRistorante { get; set; }
 
         [Required]
-        public string NomeIngrediente { get; set; }
-
-        [Required]
-        public double PrezzoIngrediente { get; set; }
+        [ForeignKey("IngredientiRistorante")]
+        public int IdIngredientiRistorante { get; set; }
 
         // NOT MAPPED //NULLABLE
 
         // NAVIGATION PROPERTY
         public virtual ProdottoRistorante ProdottoRistorante { get; set; }
+        public virtual IngredientiRistorante IngredientiRistorante { get; set; }
     }
 }

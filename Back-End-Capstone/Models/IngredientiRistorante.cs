@@ -19,9 +19,13 @@ namespace Back_End_Capstone.Models
         [Required]
         public double PrezzoIngrediente { get; set; }
 
+        [Required]
+        public bool IsAttivo { get; set; } = true;
+
         // NOT MAPPED //NULLABLE
 
         // NAVIGATION PROPERTY
         public virtual Ristorante Ristorante { get; set; }
+        public virtual ICollection<IngredientiProdottoRistorante> IngredientiProdottoRistorante { get; set; }
     }
 }

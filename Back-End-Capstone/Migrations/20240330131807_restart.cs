@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Back_End_Capstone.Migrations
 {
     /// <inheritdoc />
-    public partial class firstTry : Migration
+    public partial class restart : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -82,6 +82,7 @@ namespace Back_End_Capstone.Migrations
                     OrarioApertura = table.Column<TimeSpan>(type: "time", nullable: false),
                     OrarioChiusura = table.Column<TimeSpan>(type: "time", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsAttivo = table.Column<bool>(type: "bit", nullable: false),
                     ImgCopertina = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ImgLogo = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Descrizione = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -131,7 +132,8 @@ namespace Back_End_Capstone.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IdRistorante = table.Column<int>(type: "int", nullable: false),
                     NomeIngrediente = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PrezzoIngrediente = table.Column<double>(type: "float", nullable: false)
+                    PrezzoIngrediente = table.Column<double>(type: "float", nullable: false),
+                    IsAttivo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -185,6 +187,7 @@ namespace Back_End_Capstone.Migrations
                     IdRistorante = table.Column<int>(type: "int", nullable: false),
                     NomeProdotto = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PrezzoProdotto = table.Column<double>(type: "float", nullable: false),
+                    IsAttivo = table.Column<bool>(type: "bit", nullable: false),
                     DescrizioneProdotto = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ImgProdotto = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -230,18 +233,23 @@ namespace Back_End_Capstone.Migrations
                     IdIngredientiProdottoRistorante = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IdProdottoRistorante = table.Column<int>(type: "int", nullable: false),
-                    NomeIngrediente = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PrezzoIngrediente = table.Column<double>(type: "float", nullable: false)
+                    IdIngredientiRistorante = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_IngredientiProdottiRistoranti", x => x.IdIngredientiProdottoRistorante);
                     table.ForeignKey(
+                        name: "FK_IngredientiProdottiRistoranti_IngredientiRistoranti_IdIngredientiRistorante",
+                        column: x => x.IdIngredientiRistorante,
+                        principalTable: "IngredientiRistoranti",
+                        principalColumn: "IdIngrediente",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_IngredientiProdottiRistoranti_ProdottiRistoranti_IdProdottoRistorante",
                         column: x => x.IdProdottoRistorante,
                         principalTable: "ProdottiRistoranti",
                         principalColumn: "IdProdottoRistorante",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -279,6 +287,11 @@ namespace Back_End_Capstone.Migrations
                 name: "IX_IngredientiProdottiAcquistati_IdProdottoAcquistato",
                 table: "IngredientiProdottiAcquistati",
                 column: "IdProdottoAcquistato");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IngredientiProdottiRistoranti_IdIngredientiRistorante",
+                table: "IngredientiProdottiRistoranti",
+                column: "IdIngredientiRistorante");
 
             migrationBuilder.CreateIndex(
                 name: "IX_IngredientiProdottiRistoranti_IdProdottoRistorante",
@@ -329,13 +342,13 @@ namespace Back_End_Capstone.Migrations
                 name: "IngredientiProdottiRistoranti");
 
             migrationBuilder.DropTable(
-                name: "IngredientiRistoranti");
-
-            migrationBuilder.DropTable(
                 name: "Categorie");
 
             migrationBuilder.DropTable(
                 name: "ProdottiAcquistati");
+
+            migrationBuilder.DropTable(
+                name: "IngredientiRistoranti");
 
             migrationBuilder.DropTable(
                 name: "ProdottiRistoranti");

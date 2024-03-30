@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Back_End_Capstone.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240328133455_due")]
-    partial class due
+    [Migration("20240330131807_restart")]
+    partial class restart
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -144,17 +144,15 @@ namespace Back_End_Capstone.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdIngredientiProdottoRistorante"));
 
+                    b.Property<int>("IdIngredientiRistorante")
+                        .HasColumnType("int");
+
                     b.Property<int>("IdProdottoRistorante")
                         .HasColumnType("int");
 
-                    b.Property<string>("NomeIngrediente")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("PrezzoIngrediente")
-                        .HasColumnType("float");
-
                     b.HasKey("IdIngredientiProdottoRistorante");
+
+                    b.HasIndex("IdIngredientiRistorante");
 
                     b.HasIndex("IdProdottoRistorante");
 
@@ -171,6 +169,9 @@ namespace Back_End_Capstone.Migrations
 
                     b.Property<int>("IdRistorante")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsAttivo")
+                        .HasColumnType("bit");
 
                     b.Property<string>("NomeIngrediente")
                         .IsRequired()
@@ -446,11 +447,19 @@ namespace Back_End_Capstone.Migrations
 
             modelBuilder.Entity("Back_End_Capstone.Models.IngredientiProdottoRistorante", b =>
                 {
+                    b.HasOne("Back_End_Capstone.Models.IngredientiRistorante", "IngredientiRistorante")
+                        .WithMany("IngredientiProdottoRistorante")
+                        .HasForeignKey("IdIngredientiRistorante")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Back_End_Capstone.Models.ProdottoRistorante", "ProdottoRistorante")
                         .WithMany("IngredientiProdottoRistorante")
                         .HasForeignKey("IdProdottoRistorante")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("IngredientiRistorante");
 
                     b.Navigation("ProdottoRistorante");
                 });
@@ -526,6 +535,11 @@ namespace Back_End_Capstone.Migrations
             modelBuilder.Entity("Back_End_Capstone.Models.Categorie", b =>
                 {
                     b.Navigation("CategorieRistorante");
+                });
+
+            modelBuilder.Entity("Back_End_Capstone.Models.IngredientiRistorante", b =>
+                {
+                    b.Navigation("IngredientiProdottoRistorante");
                 });
 
             modelBuilder.Entity("Back_End_Capstone.Models.Ordini", b =>

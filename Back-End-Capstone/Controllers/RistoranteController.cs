@@ -15,13 +15,8 @@ namespace Back_End_Capstone.Controllers
         }
 
         [HttpGet("listaRistoranti")]
-        public IActionResult GetRistoranti([FromQuery] string lat, [FromQuery] string lon)
+        public IActionResult GetRistoranti()
         {
-            if (string.IsNullOrEmpty(lat) || string.IsNullOrEmpty(lon))
-            {
-                return BadRequest("Latitudine e longitudine sono obbligatori");
-            }
-
             var ristoranti = _db.Ristoranti.Select(ristorante => new
             {
                 ristorante.IdAzienda,
