@@ -17,31 +17,41 @@ namespace Back_End_Capstone.Controllers
         [HttpGet("listaRistoranti")]
         public IActionResult GetRistoranti()
         {
-            var ristoranti = _db.Ristoranti.Select(ristorante => new
-            {
-                ristorante.IdAzienda,
-                ristorante.IdRistorante,
-                ristorante.NomeRistorante,
-                ristorante.Indirizzo,
-                ristorante.Citta,
-                ristorante.CAP,
-                ristorante.Latitudine,
-                ristorante.Longitudine,
-                ristorante.Telefono,
-                ristorante.OrarioApertura,
-                ristorante.OrarioChiusura,
-                ristorante.ImgCopertina,
-                ristorante.ImgLogo,
-                ristorante.Descrizione,
-                CategorieRistorante = ristorante.CategorieRistorante.Select(cr => new
+            var ristoranti = _db
+                .Ristoranti.Where(r => r.IsAttivo == true)
+                .Select(ristorante => new
                 {
-                    cr.IdCategorie,
-                    cr.Categorie.NomeCategoria
-                }),
-                Distanza = "",
-            });
+                    ristorante.IdAzienda,
+                    ristorante.IdRistorante,
+                    ristorante.NomeRistorante,
+                    ristorante.Indirizzo,
+                    ristorante.Citta,
+                    ristorante.CAP,
+                    ristorante.Latitudine,
+                    ristorante.Longitudine,
+                    ristorante.Telefono,
+                    ristorante.OrarioApertura,
+                    ristorante.OrarioChiusura,
+                    ristorante.ImgCopertina,
+                    ristorante.ImgLogo,
+                    ristorante.Descrizione,
+                    CategorieRistorante = ristorante.CategorieRistorante.Select(cr => new
+                    {
+                        cr.IdCategorie,
+                        cr.Categorie.NomeCategoria
+                    }),
+                    Distanza = "",
+                });
 
             return Ok(ristoranti);
+        }
+
+        [HttpGet("listaCategorie")]
+        public IActionResult GetCategorie()
+        {
+            var categorie = _db.Categorie.Select(c => new { c.IdCategorie, c.NomeCategoria });
+
+            return Ok(categorie);
         }
     }
 }
