@@ -32,6 +32,13 @@ namespace Back_End_Capstone.Data
                 .WithMany(i => i.IngredientiProdottiAcquistati)
                 .HasForeignKey(i => i.IdIngredientiRistorante)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder
+                .Entity<ProdottiAcquistati>()
+                .HasOne(p => p.ProdottoRistorante)
+                .WithMany(p => p.ProdottiAcquistati)
+                .HasForeignKey(p => p.IdProdottoRistorante)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         // Aggiungi le tabelle con DbSet

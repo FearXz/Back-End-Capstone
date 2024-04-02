@@ -282,21 +282,11 @@ namespace Back_End_Capstone.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdProdottiAcquistati"));
 
-                    b.Property<string>("DescrizioneProdotto")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("IdOrdine")
                         .HasColumnType("int");
 
-                    b.Property<string>("ImgProdotto")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NomeProdotto")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("PrezzoProdotto")
-                        .HasColumnType("float");
+                    b.Property<int>("IdProdottoRistorante")
+                        .HasColumnType("int");
 
                     b.Property<int>("Quantita")
                         .HasColumnType("int");
@@ -304,6 +294,8 @@ namespace Back_End_Capstone.Migrations
                     b.HasKey("IdProdottiAcquistati");
 
                     b.HasIndex("IdOrdine");
+
+                    b.HasIndex("IdProdottoRistorante");
 
                     b.ToTable("ProdottiAcquistati");
                 });
@@ -617,7 +609,15 @@ namespace Back_End_Capstone.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Back_End_Capstone.Models.ProdottoRistorante", "ProdottoRistorante")
+                        .WithMany("ProdottiAcquistati")
+                        .HasForeignKey("IdProdottoRistorante")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Ordine");
+
+                    b.Navigation("ProdottoRistorante");
                 });
 
             modelBuilder.Entity("Back_End_Capstone.Models.ProdottoRistorante", b =>
@@ -697,6 +697,8 @@ namespace Back_End_Capstone.Migrations
             modelBuilder.Entity("Back_End_Capstone.Models.ProdottoRistorante", b =>
                 {
                     b.Navigation("IngredientiProdottoRistorante");
+
+                    b.Navigation("ProdottiAcquistati");
 
                     b.Navigation("ProdottoTipoProdotti");
                 });

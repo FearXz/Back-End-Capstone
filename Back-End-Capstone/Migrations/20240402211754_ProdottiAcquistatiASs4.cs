@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Back_End_Capstone.Migrations
 {
     /// <inheritdoc />
-    public partial class retry : Migration
+    public partial class ProdottiAcquistatiASs4 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -110,6 +110,7 @@ namespace Back_End_Capstone.Migrations
                     OrarioChiusura = table.Column<TimeSpan>(type: "time", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsAttivo = table.Column<bool>(type: "bit", nullable: false),
+                    TagRistorante = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ImgCopertina = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ImgLogo = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Descrizione = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -256,30 +257,6 @@ namespace Back_End_Capstone.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProdottiAcquistati",
-                columns: table => new
-                {
-                    IdProdottiAcquistati = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    IdOrdine = table.Column<int>(type: "int", nullable: false),
-                    NomeProdotto = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PrezzoProdotto = table.Column<double>(type: "float", nullable: false),
-                    Quantita = table.Column<int>(type: "int", nullable: false),
-                    DescrizioneProdotto = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ImgProdotto = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProdottiAcquistati", x => x.IdProdottiAcquistati);
-                    table.ForeignKey(
-                        name: "FK_ProdottiAcquistati_Ordini_IdOrdine",
-                        column: x => x.IdOrdine,
-                        principalTable: "Ordini",
-                        principalColumn: "IdOrdini",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "IngredientiProdottiRistoranti",
                 columns: table => new
                 {
@@ -299,6 +276,33 @@ namespace Back_End_Capstone.Migrations
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_IngredientiProdottiRistoranti_ProdottiRistoranti_IdProdottoRistorante",
+                        column: x => x.IdProdottoRistorante,
+                        principalTable: "ProdottiRistoranti",
+                        principalColumn: "IdProdottoRistorante",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProdottiAcquistati",
+                columns: table => new
+                {
+                    IdProdottiAcquistati = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdOrdine = table.Column<int>(type: "int", nullable: false),
+                    IdProdottoRistorante = table.Column<int>(type: "int", nullable: false),
+                    Quantita = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProdottiAcquistati", x => x.IdProdottiAcquistati);
+                    table.ForeignKey(
+                        name: "FK_ProdottiAcquistati_Ordini_IdOrdine",
+                        column: x => x.IdOrdine,
+                        principalTable: "Ordini",
+                        principalColumn: "IdOrdini",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProdottiAcquistati_ProdottiRistoranti_IdProdottoRistorante",
                         column: x => x.IdProdottoRistorante,
                         principalTable: "ProdottiRistoranti",
                         principalColumn: "IdProdottoRistorante",
@@ -339,7 +343,8 @@ namespace Back_End_Capstone.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IdProdottoAcquistato = table.Column<int>(type: "int", nullable: false),
                     IdIngredientiRistorante = table.Column<int>(type: "int", nullable: false),
-                    Quantita = table.Column<int>(type: "int", nullable: false)
+                    Quantita = table.Column<int>(type: "int", nullable: false),
+                    IsExtra = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -420,6 +425,11 @@ namespace Back_End_Capstone.Migrations
                 column: "IdOrdine");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProdottiAcquistati_IdProdottoRistorante",
+                table: "ProdottiAcquistati",
+                column: "IdProdottoRistorante");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProdottiRistoranti_IdRistorante",
                 table: "ProdottiRistoranti",
                 column: "IdRistorante");
@@ -471,19 +481,19 @@ namespace Back_End_Capstone.Migrations
                 name: "IngredientiRistoranti");
 
             migrationBuilder.DropTable(
-                name: "ProdottiRistoranti");
-
-            migrationBuilder.DropTable(
                 name: "TipiProdotti");
 
             migrationBuilder.DropTable(
                 name: "Ordini");
 
             migrationBuilder.DropTable(
-                name: "Ristoranti");
+                name: "ProdottiRistoranti");
 
             migrationBuilder.DropTable(
                 name: "Utenti");
+
+            migrationBuilder.DropTable(
+                name: "Ristoranti");
 
             migrationBuilder.DropTable(
                 name: "Aziende");
