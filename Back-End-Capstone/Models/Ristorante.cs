@@ -49,6 +49,7 @@ namespace Back_End_Capstone.Models
         public bool IsAttivo { get; set; } = true;
 
         // NULLABLE
+        public string? TagRistorante { get; set; }
         public string? ImgCopertina { get; set; }
         public string? ImgLogo { get; set; }
         public string? Descrizione { get; set; }
@@ -64,5 +65,6 @@ namespace Back_End_Capstone.Models
         public virtual ICollection<IngredientiRistorante> IngredientiRistorante { get; set; }
         public virtual ICollection<Ordini> Ordini { get; set; }
         public virtual ICollection<CategorieRistorante> CategorieRistorante { get; set; }
+        public virtual ICollection<GiorniChiusuraRistorante> GiorniChiusuraRistorante { get; set; }
     }
 }

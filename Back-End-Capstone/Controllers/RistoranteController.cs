@@ -35,10 +35,16 @@ namespace Back_End_Capstone.Controllers
                     ristorante.ImgCopertina,
                     ristorante.ImgLogo,
                     ristorante.Descrizione,
+                    ristorante.TagRistorante,
                     CategorieRistorante = ristorante.CategorieRistorante.Select(cr => new
                     {
                         cr.IdCategorie,
                         cr.Categorie.NomeCategoria
+                    }),
+                    GiorniDiChiusura = ristorante.GiorniChiusuraRistorante.Select(g => new
+                    {
+                        g.GiorniChiusura.NomeGiorno,
+                        g.GiorniChiusura.NumeroGiorno
                     }),
                     Distanza = "",
                 });

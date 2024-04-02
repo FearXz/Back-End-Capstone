@@ -4,6 +4,7 @@ using Back_End_Capstone.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Back_End_Capstone.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240402142038_retry")]
+    partial class retry
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -165,9 +168,6 @@ namespace Back_End_Capstone.Migrations
 
                     b.Property<int>("IdProdottoAcquistato")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsExtra")
-                        .HasColumnType("bit");
 
                     b.Property<int>("Quantita")
                         .HasColumnType("int");
@@ -421,9 +421,6 @@ namespace Back_End_Capstone.Migrations
 
                     b.Property<string>("Role")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TagRistorante")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Telefono")

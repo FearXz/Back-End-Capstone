@@ -29,5 +29,6 @@ namespace Back_End_Capstone.Models
         // NAVIGATION PROPERTY
         public virtual Ristorante Ristorante { get; set; }
         public virtual ICollection<IngredientiProdottoRistorante> IngredientiProdottoRistorante { get; set; }
+        public virtual ICollection<ProdottoTipoProdotto> ProdottoTipoProdotti { get; set; }
     }
 }

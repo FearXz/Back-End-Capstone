@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Back_End_Capstone.Migrations
 {
     /// <inheritdoc />
-    public partial class restart : Migration
+    public partial class retry : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -42,6 +42,33 @@ namespace Back_End_Capstone.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categorie", x => x.IdCategorie);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GiorniChiusura",
+                columns: table => new
+                {
+                    IdGiorniChiusura = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NumeroGiorno = table.Column<int>(type: "int", nullable: false),
+                    NomeGiorno = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GiorniChiusura", x => x.IdGiorniChiusura);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TipiProdotti",
+                columns: table => new
+                {
+                    IdTipoProdotto = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NomeTipoProdotto = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TipiProdotti", x => x.IdTipoProdotto);
                 });
 
             migrationBuilder.CreateTable(
@@ -118,6 +145,32 @@ namespace Back_End_Capstone.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CategorieRistoranti_Ristoranti_IdRistorante",
+                        column: x => x.IdRistorante,
+                        principalTable: "Ristoranti",
+                        principalColumn: "IdRistorante",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GiorniChiusuraRistoranti",
+                columns: table => new
+                {
+                    IdGiorniChiusuraRistorante = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdRistorante = table.Column<int>(type: "int", nullable: false),
+                    IdGiorniChiusura = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GiorniChiusuraRistoranti", x => x.IdGiorniChiusuraRistorante);
+                    table.ForeignKey(
+                        name: "FK_GiorniChiusuraRistoranti_GiorniChiusura_IdGiorniChiusura",
+                        column: x => x.IdGiorniChiusura,
+                        principalTable: "GiorniChiusura",
+                        principalColumn: "IdGiorniChiusura",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GiorniChiusuraRistoranti_Ristoranti_IdRistorante",
                         column: x => x.IdRistorante,
                         principalTable: "Ristoranti",
                         principalColumn: "IdRistorante",
@@ -253,18 +306,50 @@ namespace Back_End_Capstone.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProdottiTipiProdotti",
+                columns: table => new
+                {
+                    IdProdottoTipoProdotto = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdProdottoRistorante = table.Column<int>(type: "int", nullable: false),
+                    IdTipoProdotto = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProdottiTipiProdotti", x => x.IdProdottoTipoProdotto);
+                    table.ForeignKey(
+                        name: "FK_ProdottiTipiProdotti_ProdottiRistoranti_IdProdottoRistorante",
+                        column: x => x.IdProdottoRistorante,
+                        principalTable: "ProdottiRistoranti",
+                        principalColumn: "IdProdottoRistorante",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProdottiTipiProdotti_TipiProdotti_IdTipoProdotto",
+                        column: x => x.IdTipoProdotto,
+                        principalTable: "TipiProdotti",
+                        principalColumn: "IdTipoProdotto",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "IngredientiProdottiAcquistati",
                 columns: table => new
                 {
                     IdIngredientiProdottoAcquistato = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IdProdottoAcquistato = table.Column<int>(type: "int", nullable: false),
-                    NomeIngrediente = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PrezzoIngrediente = table.Column<double>(type: "float", nullable: false)
+                    IdIngredientiRistorante = table.Column<int>(type: "int", nullable: false),
+                    Quantita = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_IngredientiProdottiAcquistati", x => x.IdIngredientiProdottoAcquistato);
+                    table.ForeignKey(
+                        name: "FK_IngredientiProdottiAcquistati_IngredientiRistoranti_IdIngredientiRistorante",
+                        column: x => x.IdIngredientiRistorante,
+                        principalTable: "IngredientiRistoranti",
+                        principalColumn: "IdIngrediente",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_IngredientiProdottiAcquistati_ProdottiAcquistati_IdProdottoAcquistato",
                         column: x => x.IdProdottoAcquistato,
@@ -282,6 +367,22 @@ namespace Back_End_Capstone.Migrations
                 name: "IX_CategorieRistoranti_IdRistorante",
                 table: "CategorieRistoranti",
                 column: "IdRistorante");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GiorniChiusuraRistoranti_IdGiorniChiusura",
+                table: "GiorniChiusuraRistoranti",
+                column: "IdGiorniChiusura",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GiorniChiusuraRistoranti_IdRistorante",
+                table: "GiorniChiusuraRistoranti",
+                column: "IdRistorante");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IngredientiProdottiAcquistati_IdIngredientiRistorante",
+                table: "IngredientiProdottiAcquistati",
+                column: "IdIngredientiRistorante");
 
             migrationBuilder.CreateIndex(
                 name: "IX_IngredientiProdottiAcquistati_IdProdottoAcquistato",
@@ -324,6 +425,16 @@ namespace Back_End_Capstone.Migrations
                 column: "IdRistorante");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProdottiTipiProdotti_IdProdottoRistorante",
+                table: "ProdottiTipiProdotti",
+                column: "IdProdottoRistorante");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProdottiTipiProdotti_IdTipoProdotto",
+                table: "ProdottiTipiProdotti",
+                column: "IdTipoProdotto");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Ristoranti_IdAzienda",
                 table: "Ristoranti",
                 column: "IdAzienda");
@@ -336,13 +447,22 @@ namespace Back_End_Capstone.Migrations
                 name: "CategorieRistoranti");
 
             migrationBuilder.DropTable(
+                name: "GiorniChiusuraRistoranti");
+
+            migrationBuilder.DropTable(
                 name: "IngredientiProdottiAcquistati");
 
             migrationBuilder.DropTable(
                 name: "IngredientiProdottiRistoranti");
 
             migrationBuilder.DropTable(
+                name: "ProdottiTipiProdotti");
+
+            migrationBuilder.DropTable(
                 name: "Categorie");
+
+            migrationBuilder.DropTable(
+                name: "GiorniChiusura");
 
             migrationBuilder.DropTable(
                 name: "ProdottiAcquistati");
@@ -352,6 +472,9 @@ namespace Back_End_Capstone.Migrations
 
             migrationBuilder.DropTable(
                 name: "ProdottiRistoranti");
+
+            migrationBuilder.DropTable(
+                name: "TipiProdotti");
 
             migrationBuilder.DropTable(
                 name: "Ordini");

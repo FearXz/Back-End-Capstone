@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Back_End_Capstone.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240330131807_restart")]
-    partial class restart
+    [Migration("20240402181500_aggiunterobe")]
+    partial class aggiunterobe
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -111,6 +111,50 @@ namespace Back_End_Capstone.Migrations
                     b.ToTable("CategorieRistoranti");
                 });
 
+            modelBuilder.Entity("Back_End_Capstone.Models.GiorniChiusura", b =>
+                {
+                    b.Property<int>("IdGiorniChiusura")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdGiorniChiusura"));
+
+                    b.Property<string>("NomeGiorno")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NumeroGiorno")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdGiorniChiusura");
+
+                    b.ToTable("GiorniChiusura");
+                });
+
+            modelBuilder.Entity("Back_End_Capstone.Models.GiorniChiusuraRistorante", b =>
+                {
+                    b.Property<int>("IdGiorniChiusuraRistorante")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdGiorniChiusuraRistorante"));
+
+                    b.Property<int>("IdGiorniChiusura")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdRistorante")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdGiorniChiusuraRistorante");
+
+                    b.HasIndex("IdGiorniChiusura")
+                        .IsUnique();
+
+                    b.HasIndex("IdRistorante");
+
+                    b.ToTable("GiorniChiusuraRistoranti");
+                });
+
             modelBuilder.Entity("Back_End_Capstone.Models.IngredientiProdottoAcquistato", b =>
                 {
                     b.Property<int>("IdIngredientiProdottoAcquistato")
@@ -119,17 +163,21 @@ namespace Back_End_Capstone.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdIngredientiProdottoAcquistato"));
 
+                    b.Property<int>("IdIngredientiRistorante")
+                        .HasColumnType("int");
+
                     b.Property<int>("IdProdottoAcquistato")
                         .HasColumnType("int");
 
-                    b.Property<string>("NomeIngrediente")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsExtra")
+                        .HasColumnType("bit");
 
-                    b.Property<double>("PrezzoIngrediente")
-                        .HasColumnType("float");
+                    b.Property<int>("Quantita")
+                        .HasColumnType("int");
 
                     b.HasKey("IdIngredientiProdottoAcquistato");
+
+                    b.HasIndex("IdIngredientiRistorante");
 
                     b.HasIndex("IdProdottoAcquistato");
 
@@ -297,6 +345,29 @@ namespace Back_End_Capstone.Migrations
                     b.ToTable("ProdottiRistoranti");
                 });
 
+            modelBuilder.Entity("Back_End_Capstone.Models.ProdottoTipoProdotto", b =>
+                {
+                    b.Property<int>("IdProdottoTipoProdotto")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdProdottoTipoProdotto"));
+
+                    b.Property<int>("IdProdottoRistorante")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdTipoProdotto")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdProdottoTipoProdotto");
+
+                    b.HasIndex("IdProdottoRistorante");
+
+                    b.HasIndex("IdTipoProdotto");
+
+                    b.ToTable("ProdottiTipiProdotti");
+                });
+
             modelBuilder.Entity("Back_End_Capstone.Models.Ristorante", b =>
                 {
                     b.Property<int>("IdRistorante")
@@ -355,6 +426,9 @@ namespace Back_End_Capstone.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("TagRistorante")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Telefono")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -364,6 +438,23 @@ namespace Back_End_Capstone.Migrations
                     b.HasIndex("IdAzienda");
 
                     b.ToTable("Ristoranti");
+                });
+
+            modelBuilder.Entity("Back_End_Capstone.Models.TipoProdotto", b =>
+                {
+                    b.Property<int>("IdTipoProdotto")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdTipoProdotto"));
+
+                    b.Property<string>("NomeTipoProdotto")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("IdTipoProdotto");
+
+                    b.ToTable("TipiProdotti");
                 });
 
             modelBuilder.Entity("Back_End_Capstone.Models.Utente", b =>
@@ -434,13 +525,40 @@ namespace Back_End_Capstone.Migrations
                     b.Navigation("Ristorante");
                 });
 
+            modelBuilder.Entity("Back_End_Capstone.Models.GiorniChiusuraRistorante", b =>
+                {
+                    b.HasOne("Back_End_Capstone.Models.GiorniChiusura", "GiorniChiusura")
+                        .WithOne("GiorniChiusuraRistorante")
+                        .HasForeignKey("Back_End_Capstone.Models.GiorniChiusuraRistorante", "IdGiorniChiusura")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Back_End_Capstone.Models.Ristorante", "Ristorante")
+                        .WithMany("GiorniChiusuraRistorante")
+                        .HasForeignKey("IdRistorante")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GiorniChiusura");
+
+                    b.Navigation("Ristorante");
+                });
+
             modelBuilder.Entity("Back_End_Capstone.Models.IngredientiProdottoAcquistato", b =>
                 {
+                    b.HasOne("Back_End_Capstone.Models.IngredientiRistorante", "IngredientiRistorante")
+                        .WithMany("IngredientiProdottiAcquistati")
+                        .HasForeignKey("IdIngredientiRistorante")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Back_End_Capstone.Models.ProdottiAcquistati", "ProdottoAcquistato")
                         .WithMany("IngredientiProdottoAcquistato")
                         .HasForeignKey("IdProdottoAcquistato")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("IngredientiRistorante");
 
                     b.Navigation("ProdottoAcquistato");
                 });
@@ -516,6 +634,25 @@ namespace Back_End_Capstone.Migrations
                     b.Navigation("Ristorante");
                 });
 
+            modelBuilder.Entity("Back_End_Capstone.Models.ProdottoTipoProdotto", b =>
+                {
+                    b.HasOne("Back_End_Capstone.Models.ProdottoRistorante", "ProdottoRistorante")
+                        .WithMany("ProdottoTipoProdotti")
+                        .HasForeignKey("IdProdottoRistorante")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Back_End_Capstone.Models.TipoProdotto", "TipoProdotto")
+                        .WithMany("ProdottoTipoProdotti")
+                        .HasForeignKey("IdTipoProdotto")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProdottoRistorante");
+
+                    b.Navigation("TipoProdotto");
+                });
+
             modelBuilder.Entity("Back_End_Capstone.Models.Ristorante", b =>
                 {
                     b.HasOne("Back_End_Capstone.Models.Azienda", "Azienda")
@@ -537,8 +674,16 @@ namespace Back_End_Capstone.Migrations
                     b.Navigation("CategorieRistorante");
                 });
 
+            modelBuilder.Entity("Back_End_Capstone.Models.GiorniChiusura", b =>
+                {
+                    b.Navigation("GiorniChiusuraRistorante")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Back_End_Capstone.Models.IngredientiRistorante", b =>
                 {
+                    b.Navigation("IngredientiProdottiAcquistati");
+
                     b.Navigation("IngredientiProdottoRistorante");
                 });
 
@@ -555,17 +700,26 @@ namespace Back_End_Capstone.Migrations
             modelBuilder.Entity("Back_End_Capstone.Models.ProdottoRistorante", b =>
                 {
                     b.Navigation("IngredientiProdottoRistorante");
+
+                    b.Navigation("ProdottoTipoProdotti");
                 });
 
             modelBuilder.Entity("Back_End_Capstone.Models.Ristorante", b =>
                 {
                     b.Navigation("CategorieRistorante");
 
+                    b.Navigation("GiorniChiusuraRistorante");
+
                     b.Navigation("IngredientiRistorante");
 
                     b.Navigation("Ordini");
 
                     b.Navigation("ProdottiRistorante");
+                });
+
+            modelBuilder.Entity("Back_End_Capstone.Models.TipoProdotto", b =>
+                {
+                    b.Navigation("ProdottoTipoProdotti");
                 });
 
             modelBuilder.Entity("Back_End_Capstone.Models.Utente", b =>
