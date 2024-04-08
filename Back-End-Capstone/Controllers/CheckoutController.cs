@@ -1,4 +1,5 @@
 ﻿using Back_End_Capstone.ModelsDto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stripe.Checkout;
 
@@ -6,6 +7,7 @@ namespace Back_End_Capstone.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class CheckoutController : ControllerBase
     {
         [HttpPost("create-session")]
@@ -38,17 +40,35 @@ namespace Back_End_Capstone.Controllers
             // Crea opzioni per la sessione di checkout
             var options = new SessionCreateOptions
             {
-                PaymentMethodTypes = new List<string> { "card" },
+                PaymentMethodTypes = new List<string> { "card", "paypal" },
                 LineItems = lineItems,
                 Mode = "payment",
-                SuccessUrl = domain + "/success",
-                CancelUrl = domain + "/cancel",
+                SuccessUrl = domain + "/success?session_id={CHECKOUT_SESSION_ID}",
+                CancelUrl = domain + "/checkout",
             };
 
             var service = new SessionService();
             Session session = service.Create(options);
 
             return Ok(new { sessionId = session.Id });
+        }
+
+        [HttpGet("verify-session/{sessionId}")]
+        public ActionResult VerifySession(string sessionId)
+        {
+            var service = new SessionService();
+            Session session = service.Get(sessionId);
+
+            if (session.PaymentStatus == "paid")
+            {
+                // Il pagamento è stato effettuato con successo
+                return Ok();
+            }
+            else
+            {
+                // Il pagamento non è stato effettuato con successo
+                return BadRequest();
+            }
         }
     }
 }
