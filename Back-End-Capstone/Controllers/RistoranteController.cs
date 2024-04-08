@@ -83,6 +83,14 @@ namespace Back_End_Capstone.Controllers
                     ristorante.ImgLogo,
                     ristorante.Descrizione,
                     ristorante.TagRistorante,
+                    IngredientiRistorante = ristorante
+                        .IngredientiRistorante.Where(state => state.IsAttivo == true)
+                        .Select(ir => new
+                        {
+                            ir.IdIngrediente,
+                            ir.NomeIngrediente,
+                            ir.PrezzoIngrediente,
+                        }),
                     CategorieRistorante = ristorante.CategorieRistorante.Select(cr => new
                     {
                         cr.IdCategorie,

@@ -21,7 +21,7 @@ namespace Back_End_Capstone.Models
         public int Quantita { get; set; } = 1;
 
         // NULLABLE
-
+        public double? PrezzoTotale { get; set; }
 
         // NAVIGATION PROPERTIES
         public virtual Ordini Ordine { get; set; }

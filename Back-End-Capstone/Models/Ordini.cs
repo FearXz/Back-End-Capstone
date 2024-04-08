@@ -34,6 +34,7 @@ namespace Back_End_Capstone.Models
 
         // NOT REQUIRED - NULLABLE
         public string? Note { get; set; }
+        public double? TotaleOrdine { get; set; }
 
         // NOT MAPPED
         [NotMapped]
