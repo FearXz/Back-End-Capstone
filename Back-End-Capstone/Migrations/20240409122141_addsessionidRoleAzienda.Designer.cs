@@ -4,6 +4,7 @@ using Back_End_Capstone.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Back_End_Capstone.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240409122141_addsessionidRoleAzienda")]
+    partial class addsessionidRoleAzienda
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -263,9 +266,6 @@ namespace Back_End_Capstone.Migrations
                     b.Property<bool>("IsOrdineEvaso")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsPagato")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
 
@@ -273,7 +273,6 @@ namespace Back_End_Capstone.Migrations
                         .HasColumnType("time");
 
                     b.Property<string>("StripeSessionId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double?>("TotaleOrdine")

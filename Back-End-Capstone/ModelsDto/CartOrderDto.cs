@@ -2,7 +2,7 @@
 {
     public class CartOrderDto
     {
-        public int idOrdini { get; set; }
+        public int idRistorante { get; set; }
         public string indirizzoDiConsegna { get; set; }
         public string orarioConsegnaPrevista { get; set; }
         public string note { get; set; }

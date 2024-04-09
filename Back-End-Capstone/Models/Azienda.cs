@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using Back_End_Capstone.Data;
 
 namespace Back_End_Capstone.Models
 {
@@ -33,6 +35,10 @@ namespace Back_End_Capstone.Models
         [Required]
         [StringLength(5)]
         public string CAP { get; set; }
+
+        [Required]
+        [DefaultValue(UserRoles.AZIENDA)]
+        public string Role { get; set; } = UserRoles.AZIENDA;
 
         // NOT MAPPED
 

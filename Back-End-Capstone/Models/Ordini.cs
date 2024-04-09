@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Back_End_Capstone.Models
@@ -25,6 +26,13 @@ namespace Back_End_Capstone.Models
 
         [Required]
         public TimeSpan OrarioConsegnaPrevista { get; set; }
+
+        [Required]
+        [DefaultValue(false)]
+        public bool IsPagato { get; set; } = false;
+
+        [Required]
+        public string StripeSessionId { get; set; }
 
         [Required]
         public bool IsOrdineEvaso { get; set; } = false;
