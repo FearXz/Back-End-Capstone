@@ -32,8 +32,6 @@ namespace Back_End_Capstone.Controllers
                 return BadRequest(ModelState);
             }
 
-            var domain = "http://localhost:5173"; // URL del tuo frontend React
-
             // Crea la lista degli articoli per la sessione di checkout
             var lineItems = request
                 .prodotti.Select(item => new SessionLineItemOptions
@@ -51,7 +49,8 @@ namespace Back_End_Capstone.Controllers
                 })
                 .ToList();
 
-            string uniqueId = Guid.NewGuid().ToString();
+            // URL del tuo frontend React
+            var domain = ClientInfo.DOMAIN;
 
             // Crea opzioni per la sessione di checkout
             var options = new SessionCreateOptions
@@ -123,7 +122,6 @@ namespace Back_End_Capstone.Controllers
                 {
                     //var paymentIntent = (PaymentIntent)stripeEvent.Data.Object;
                     //var metadata = paymentIntent.Metadata;
-                    //var sessionId = metadata["order_id"];
                     var session = stripeEvent.Data.Object as Session;
                     var sessionId = session.Id;
 
@@ -153,25 +151,35 @@ namespace Back_End_Capstone.Controllers
             var service = new SessionService();
             Session session = service.Get(sessionId);
 
+            var order = _db.Ordini.FirstOrDefault(o => o.StripeSessionId == sessionId);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
             if (session.PaymentStatus == "paid")
             {
-                var order = _db.Ordini.FirstOrDefault(o => o.StripeSessionId == sessionId);
-
-                if (order == null)
-                {
-                    return NotFound();
-                }
                 if (order.IsPagato)
                 {
                     return Ok();
                 }
-
-                return Ok();
+                else
+                {
+                    order.IsPagato = true;
+                    _db.Ordini.Update(order);
+                    _db.SaveChanges();
+                    return Ok();
+                }
             }
             else
             {
+                // cancella l'ordine
+                // _db.Ordini.Remove(order);
+                // _db.SaveChanges();
+
                 // Il pagamento non è stato effettuato con successo
-                return BadRequest();
+                return NotFound();
             }
         }
     }

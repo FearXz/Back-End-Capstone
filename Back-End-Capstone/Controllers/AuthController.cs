@@ -47,6 +47,7 @@ namespace Back_End_Capstone.Controllers
                             utente.Cognome,
                             utente.Email,
                             utente.Citta,
+                            utente.Cellulare,
                             utente.Indirizzo,
                             utente.CAP,
                             utente.Role
