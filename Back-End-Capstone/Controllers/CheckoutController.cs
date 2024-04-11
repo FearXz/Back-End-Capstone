@@ -5,6 +5,7 @@ using Back_End_Capstone.Models;
 using Back_End_Capstone.ModelsDto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Stripe;
 using Stripe.Checkout;
 
@@ -52,6 +53,10 @@ namespace Back_End_Capstone.Controllers
             // URL del tuo frontend React
             var domain = ClientInfo.DOMAIN;
 
+            // devo recuperare l'id dell'utente loggato dal token JWT
+            string userId = User.FindFirstValue(JwtRegisteredClaimNames.Jti);
+            string email = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+
             // Crea opzioni per la sessione di checkout
             var options = new SessionCreateOptions
             {
@@ -64,9 +69,6 @@ namespace Back_End_Capstone.Controllers
 
             var service = new SessionService();
             Session session = service.Create(options);
-
-            // devo recuperare l'id dell'utente loggato dal token JWT
-            string userId = User.FindFirstValue(JwtRegisteredClaimNames.Jti);
 
             // Creo un nuovo ordine
             var order = new Ordini
@@ -126,7 +128,9 @@ namespace Back_End_Capstone.Controllers
                     var sessionId = session.Id;
 
                     // Cerca l'ordine nel database utilizzando l'ID della sessione di Stripe
-                    var order = _db.Ordini.FirstOrDefault(o => o.StripeSessionId == sessionId);
+                    var order = _db
+                        .Ordini.Include(o => o.Utente)
+                        .FirstOrDefault(o => o.StripeSessionId == sessionId);
 
                     if (order != null)
                     {
@@ -134,6 +138,15 @@ namespace Back_End_Capstone.Controllers
                         order.IsPagato = true;
                         _db.Ordini.Update(order);
                         _db.SaveChanges();
+
+                        // Invia una mail di conferma all'utente
+
+                        var email = order.Utente.Email;
+                        var subject = $"Ordine No. {order.IdOrdini} confermato";
+                        var htmlMessage = "<h1>Il tuo ordine è stato confermato</h1>";
+
+                        EmailSender EmailSender = new EmailSender();
+                        await EmailSender.SendEmailAsync(email, subject, htmlMessage);
                     }
                 }
 
