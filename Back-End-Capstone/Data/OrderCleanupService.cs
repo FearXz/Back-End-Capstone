@@ -32,12 +32,14 @@
                     var oldUnpaidOrders = context.Ordini.Where(o =>
                         !o.IsPagato && o.DataOrdine <= now.AddMinutes(-15)
                     );
+                    if (oldUnpaidOrders != null)
+                    {
+                        // Cancella tutti gli ordini non pagati vecchi
+                        context.Ordini.RemoveRange(oldUnpaidOrders);
 
-                    // Cancella tutti gli ordini non pagati vecchi
-                    context.Ordini.RemoveRange(oldUnpaidOrders);
-
-                    // Salva le modifiche al database
-                    context.SaveChanges();
+                        // Salva le modifiche al database
+                        context.SaveChanges();
+                    }
                 }
 
                 // Aspetta 30 minuti prima di eseguire di nuovo
