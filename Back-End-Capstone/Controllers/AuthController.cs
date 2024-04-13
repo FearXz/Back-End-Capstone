@@ -59,6 +59,68 @@ namespace Back_End_Capstone.Controllers
             return Unauthorized();
         }
 
+        [HttpPost("loginazienda")]
+        public IActionResult Loginazienda([FromBody] LoginDto login)
+        {
+            if (ModelState.IsValid == false)
+            {
+                return BadRequest();
+            }
+
+            var azienda = _db.Aziende.FirstOrDefault(u => u.Email == login.Email);
+
+            if (azienda == null || !BCrypt.Net.BCrypt.Verify(login.Password, azienda.Password))
+            {
+                return Unauthorized();
+            }
+
+            if (azienda != null)
+            {
+                var claims = new[]
+                {
+                    new Claim(JwtRegisteredClaimNames.Jti, azienda.IdAzienda.ToString()),
+                    new Claim(JwtRegisteredClaimNames.Sub, azienda.Email),
+                    new Claim(ClaimTypes.Role, azienda.Role),
+                };
+
+                var key = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])
+                );
+                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                var token = new JwtSecurityToken(
+                    _configuration["Jwt:Issuer"],
+                    _configuration["Jwt:Audience"],
+                    claims,
+                    expires: DateTime.Now.AddDays(7),
+                    signingCredentials: creds
+                );
+
+                var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+                return Ok(
+                    new
+                    {
+                        token = tokenString,
+                        Azienda = new
+                        {
+                            azienda.IdAzienda,
+                            azienda.NomeAzienda,
+                            azienda.PartitaIva,
+                            azienda.Email,
+                            azienda.Citta,
+                            azienda.Telefono,
+                            azienda.Indirizzo,
+                            azienda.CAP,
+                            azienda.Role
+                        }
+                    }
+                );
+            }
+
+            return Unauthorized();
+        }
+
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegistrationDto register)
         {
@@ -87,6 +149,42 @@ namespace Back_End_Capstone.Controllers
             };
 
             _db.Utenti.Add(user);
+            _db.SaveChanges();
+
+            return Ok();
+        }
+
+        [HttpPost("registerazienda")]
+        public IActionResult RegisterAzienda([FromBody] RegistrationAziendaDto register)
+        {
+            if (ModelState.IsValid == false)
+            {
+                return BadRequest();
+            }
+
+            // voglio controllare se prima di inserire un utente, se esiste già un utente con la stessa email o partita iva
+            var existingUser = _db.Aziende.FirstOrDefault(u =>
+                u.Email == register.Email || u.PartitaIva == register.PartitaIva
+            );
+
+            if (existingUser != null)
+            {
+                return Conflict();
+            }
+
+            var azienda = new Azienda
+            {
+                NomeAzienda = register.NomeAzienda,
+                PartitaIva = register.PartitaIva,
+                Email = register.Email,
+                Password = BCrypt.Net.BCrypt.HashPassword(register.Password).ToString(),
+                Telefono = register.Telefono,
+                Indirizzo = register.Indirizzo,
+                Citta = register.Citta,
+                CAP = register.CAP,
+            };
+
+            _db.Aziende.Add(azienda);
             _db.SaveChanges();
 
             return Ok();
