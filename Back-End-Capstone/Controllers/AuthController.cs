@@ -122,7 +122,7 @@ namespace Back_End_Capstone.Controllers
         }
 
         [HttpPost("register")]
-        public IActionResult Register([FromBody] RegistrationDto register)
+        public async Task<IActionResult> Register([FromBody] RegistrationDto register)
         {
             if (ModelState.IsValid == false)
             {
@@ -151,11 +151,35 @@ namespace Back_End_Capstone.Controllers
             _db.Utenti.Add(user);
             _db.SaveChanges();
 
+            var email = user.Email;
+            var subject = $"Registrazione Effettuata con successo";
+            var htmlMessage =
+                $@"
+<html lang=""en"">
+  <head>
+    <meta charset=""UTF-8"" />
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"" />
+    <title>Document</title>
+    <style>
+      .text-center {{
+        text-align: center;
+      }}
+    </style>
+  </head>
+  <body>
+    <h1 class=""text-center"">CIAO {user.Nome}, BENVENUTO SU TAKE2ME</h1>
+    <p class=""text-center"">Adesso puoi cominciare ad ordinare</p>
+  </body>
+</html>";
+
+            EmailSender EmailSender = new EmailSender();
+            await EmailSender.SendEmailAsync(email, subject, htmlMessage);
+
             return Ok();
         }
 
         [HttpPost("registerazienda")]
-        public IActionResult RegisterAzienda([FromBody] RegistrationAziendaDto register)
+        public async Task<IActionResult> RegisterAzienda([FromBody] RegistrationAziendaDto register)
         {
             if (ModelState.IsValid == false)
             {
@@ -186,6 +210,30 @@ namespace Back_End_Capstone.Controllers
 
             _db.Aziende.Add(azienda);
             _db.SaveChanges();
+
+            var email = azienda.Email;
+            var subject = $"Registrazione Effettuata con successo";
+            var htmlMessage =
+                $@"
+<html lang=""en"">
+  <head>
+    <meta charset=""UTF-8"" />
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"" />
+    <title>Document</title>
+    <style>
+      .text-center {{
+        text-align: center;
+      }}
+    </style>
+  </head>
+  <body>
+    <h1 class=""text-center"">CIAO {azienda.NomeAzienda}, BENVENUTO SU TAKE2ME</h1>
+    <p class=""text-center"">Adesso puoi creare il tuo locale</p>
+  </body>
+</html>";
+
+            EmailSender EmailSender = new EmailSender();
+            await EmailSender.SendEmailAsync(email, subject, htmlMessage);
 
             return Ok();
         }

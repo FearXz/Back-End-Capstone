@@ -126,6 +126,7 @@ namespace Back_End_Capstone.Controllers
                     //var metadata = paymentIntent.Metadata;
                     var session = stripeEvent.Data.Object as Session;
                     var sessionId = session.Id;
+                    //   var paymentIntentId = session.PaymentIntentId;
 
                     // Cerca l'ordine nel database utilizzando l'ID della sessione di Stripe
                     var order = _db
@@ -136,6 +137,7 @@ namespace Back_End_Capstone.Controllers
                     {
                         // Aggiorna lo stato dell'ordine a isPagato = true
                         order.IsPagato = true;
+                        // order.PaymentIntentId = paymentIntentId;
                         _db.Ordini.Update(order);
                         _db.SaveChanges();
 

@@ -32,6 +32,10 @@ namespace Back_End_Capstone.Models
         public bool IsPagato { get; set; } = false;
 
         [Required]
+        [DefaultValue(false)]
+        public bool IsRefunded { get; set; } = false;
+
+        [Required]
         public string StripeSessionId { get; set; }
 
         [Required]
@@ -41,6 +45,7 @@ namespace Back_End_Capstone.Models
         public bool IsOrdineConsegnato { get; set; } = false;
 
         // NOT REQUIRED - NULLABLE
+        public string? PaymentIntentId { get; set; }
         public string? Note { get; set; }
         public double? TotaleOrdine { get; set; }
 

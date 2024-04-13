@@ -9,7 +9,7 @@ namespace Back_End_Capstone.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize]
+    [Authorize(Roles = UserRoles.UTENTE)]
     public class UtenteController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
