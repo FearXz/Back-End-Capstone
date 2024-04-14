@@ -76,6 +76,11 @@ namespace Back_End_Capstone.Controllers
 
             if (azienda != null)
             {
+                var jwt = _configuration.GetSection("Jwt");
+                var jwtkey = jwt["Key"];
+                var jwtissuer = jwt["Issuer"];
+                var jwtaudience = jwt["Audience"];
+
                 var claims = new[]
                 {
                     new Claim(JwtRegisteredClaimNames.Jti, azienda.IdAzienda.ToString()),
@@ -83,14 +88,12 @@ namespace Back_End_Capstone.Controllers
                     new Claim(ClaimTypes.Role, azienda.Role),
                 };
 
-                var key = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])
-                );
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtkey));
                 var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
                 var token = new JwtSecurityToken(
-                    _configuration["Jwt:Issuer"],
-                    _configuration["Jwt:Audience"],
+                    jwtissuer,
+                    jwtaudience,
                     claims,
                     expires: DateTime.Now.AddDays(7),
                     signingCredentials: creds
@@ -247,12 +250,17 @@ namespace Back_End_Capstone.Controllers
                 new Claim(ClaimTypes.Role, utente.Role),
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var jwt = _configuration.GetSection("Jwt");
+            var jwtkey = jwt["Key"];
+            var jwtissuer = jwt["Issuer"];
+            var jwtaudience = jwt["Audience"];
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtkey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                _configuration["Jwt:Issuer"],
-                _configuration["Jwt:Audience"],
+                jwtissuer,
+                jwtaudience,
                 claims,
                 expires: DateTime.Now.AddDays(7),
                 signingCredentials: creds
