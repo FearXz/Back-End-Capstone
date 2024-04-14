@@ -113,7 +113,7 @@ namespace Back_End_Capstone.Controllers
         {
             var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
             var stripeSignatureHeader = Request.Headers["Stripe-Signature"];
-            var secret = _configuration["Stripe:WebhookSecret"];
+            var secret = _configuration.GetSection("MySecrets")["WebhookSecret"];
 
             try
             {

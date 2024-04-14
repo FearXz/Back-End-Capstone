@@ -7,6 +7,16 @@ using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var mySecrets = builder.Configuration.GetSection("MySecrets");
+var webhookSecret = mySecrets["WebhookSecret"];
+var secretKey = mySecrets["SecretKey"];
+var publishableKey = mySecrets["PublishableKey"];
+
+var jwt = builder.Configuration.GetSection("Jwt");
+var key = jwt["Key"];
+var issuer = jwt["Issuer"];
+var audience = jwt["Audience"];
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -39,11 +49,9 @@ builder
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
-            )
+            ValidIssuer = issuer,
+            ValidAudience = audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
         };
     });
 
@@ -51,8 +59,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
-StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe")["SecretKey"];
+builder.Services.Configure<StripeSettings>(mySecrets);
+StripeConfiguration.ApiKey = secretKey;
 
 builder.Services.AddHostedService<OrderCleanupService>();
 
