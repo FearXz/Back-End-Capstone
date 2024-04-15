@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Back_End_Capstone</RootNamespace>
+    <UserSecretsId>6eef1588-af9a-40d5-8ff5-c090d6ae888a</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

@@ -290,5 +290,29 @@ namespace Back_End_Capstone.Controllers
                 CAP = user.CAP,
             };
         }
+
+        [HttpPost("contactemail")]
+        public async Task<IActionResult> ContactEmail([FromBody] ContactEmailDto email)
+        {
+            if (ModelState.IsValid == false)
+            {
+                return BadRequest();
+            }
+            try
+            {
+                var subject = $"Richiesta di contatto da {email.Nome} {email.Cognome}";
+                var mail = "omarlogiudice@live.it";
+                var htmlMessage = $@"{email.Messaggio}";
+
+                EmailSender EmailSender = new EmailSender();
+                await EmailSender.SendEmailAsync(mail, subject, htmlMessage);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            return Ok();
+        }
     }
 }
