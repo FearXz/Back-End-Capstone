@@ -15,6 +15,6 @@ namespace Back_End_Capstone.Models
 
         // NAVIGATION PROPERTY
 
-        public virtual GiorniChiusuraRistorante GiorniChiusuraRistorante { get; set; }
+        public virtual ICollection<GiorniChiusuraRistorante> GiorniChiusuraRistorante { get; set; }
     }
 }

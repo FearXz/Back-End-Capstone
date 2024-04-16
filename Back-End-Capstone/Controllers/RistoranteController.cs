@@ -46,7 +46,6 @@ namespace Back_End_Capstone.Controllers
                         g.GiorniChiusura.NomeGiorno,
                         g.GiorniChiusura.NumeroGiorno
                     }),
-                    Distanza = "",
                 });
 
             return Ok(ristoranti);

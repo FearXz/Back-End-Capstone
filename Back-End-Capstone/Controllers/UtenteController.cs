@@ -113,7 +113,7 @@ namespace Back_End_Capstone.Controllers
 
                 utenteDb.Password = BCrypt.Net.BCrypt.HashPassword(utente.newPassword);
             }
-
+            _db.Utenti.Update(utenteDb);
             _db.SaveChanges();
 
             return Ok();
