@@ -1,6 +1,7 @@
 using System.Text;
 using Back_End_Capstone.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Stripe;
@@ -62,6 +63,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.Configure<StripeSettings>(mySecrets);
 StripeConfiguration.ApiKey = secretKey;
 
+builder.Services.AddSingleton<IEmailSender, EmailSender>();
 builder.Services.AddHostedService<OrderCleanupService>();
 
 var app = builder.Build();

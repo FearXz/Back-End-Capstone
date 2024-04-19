@@ -4,6 +4,7 @@ using Back_End_Capstone.Data;
 using Back_End_Capstone.Models;
 using Back_End_Capstone.ModelsDto;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Stripe;
@@ -18,11 +19,17 @@ namespace Back_End_Capstone.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly IConfiguration _configuration;
+        private readonly IEmailSender _emailSender;
 
-        public CheckoutController(ApplicationDbContext db, IConfiguration configuration)
+        public CheckoutController(
+            ApplicationDbContext db,
+            IConfiguration configuration,
+            IEmailSender emailSender
+        )
         {
             _db = db;
             _configuration = configuration;
+            _emailSender = emailSender;
         }
 
         [HttpPost("create-session")]
@@ -147,8 +154,7 @@ namespace Back_End_Capstone.Controllers
                         var subject = $"Ordine No. {order.IdOrdini} confermato";
                         var htmlMessage = "<h1>Il tuo ordine è stato confermato</h1>";
 
-                        EmailSender EmailSender = new EmailSender();
-                        await EmailSender.SendEmailAsync(email, subject, htmlMessage);
+                        await _emailSender.SendEmailAsync(email, subject, htmlMessage);
                     }
                 }
 

@@ -4,6 +4,7 @@ using System.Text;
 using Back_End_Capstone.Data;
 using Back_End_Capstone.Models;
 using Back_End_Capstone.ModelsDto;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -15,11 +16,17 @@ namespace Back_End_Capstone.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _db;
+        private readonly IEmailSender _emailSender;
 
-        public AuthController(IConfiguration configuration, ApplicationDbContext db)
+        public AuthController(
+            IConfiguration configuration,
+            ApplicationDbContext db,
+            IEmailSender emailSender
+        )
         {
             _configuration = configuration;
             _db = db;
+            _emailSender = emailSender;
         }
 
         [HttpPost("login")]
@@ -175,8 +182,7 @@ namespace Back_End_Capstone.Controllers
   </body>
 </html>";
 
-            EmailSender EmailSender = new EmailSender();
-            await EmailSender.SendEmailAsync(email, subject, htmlMessage);
+            await _emailSender.SendEmailAsync(email, subject, htmlMessage);
 
             return Ok();
         }
@@ -235,8 +241,7 @@ namespace Back_End_Capstone.Controllers
   </body>
 </html>";
 
-            EmailSender EmailSender = new EmailSender();
-            await EmailSender.SendEmailAsync(email, subject, htmlMessage);
+            await _emailSender.SendEmailAsync(email, subject, htmlMessage);
 
             return Ok();
         }
@@ -301,11 +306,10 @@ namespace Back_End_Capstone.Controllers
             try
             {
                 var subject = $"Richiesta di contatto da {email.Nome} {email.Cognome}";
-                var mail = "omarlogiudice@live.it";
+                var mail = _configuration["Contact:Email"];
                 var htmlMessage = $@"{email.Messaggio}";
 
-                EmailSender EmailSender = new EmailSender();
-                await EmailSender.SendEmailAsync(mail, subject, htmlMessage);
+                await _emailSender.SendEmailAsync(mail, subject, htmlMessage);
             }
             catch (Exception e)
             {
