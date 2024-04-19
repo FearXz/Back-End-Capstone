@@ -6,10 +6,20 @@ namespace Back_End_Capstone.Data
 {
     public class EmailSender : IEmailSender
     {
+        private readonly IConfiguration _configuration;
+
+        public EmailSender(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
+            var Sender = _configuration.GetSection("Email")["Sender"];
+            var Password = _configuration.GetSection("Email")["Password"];
+
             var emailToSend = new MimeMessage();
-            emailToSend.From.Add(MailboxAddress.Parse("homeserverxxx@gmail.com"));
+            emailToSend.From.Add(MailboxAddress.Parse(Sender));
             emailToSend.To.Add(MailboxAddress.Parse(email));
             emailToSend.Subject = subject;
             emailToSend.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = htmlMessage };
@@ -20,7 +30,7 @@ namespace Back_End_Capstone.Data
                     587,
                     MailKit.Security.SecureSocketOptions.StartTls
                 );
-                emailClient.Authenticate("homeserverxxx@gmail.com", "vqpahyjfwpqrgzrc");
+                emailClient.Authenticate(Sender, Password);
                 emailClient.Send(emailToSend);
                 emailClient.Disconnect(true);
             }
