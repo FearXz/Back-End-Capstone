@@ -32,7 +32,7 @@
                     var oldUnpaidOrders = context.Ordini.Where(o =>
                         !o.IsPagato && o.DataOrdine <= now.AddMinutes(-15)
                     );
-                    if (oldUnpaidOrders != null)
+                    if (oldUnpaidOrders.Any())
                     {
                         // Cancella tutti gli ordini non pagati vecchi
                         context.Ordini.RemoveRange(oldUnpaidOrders);
