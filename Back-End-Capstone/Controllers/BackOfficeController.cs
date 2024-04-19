@@ -392,16 +392,7 @@ namespace Back_End_Capstone.Controllers
 
                 if (!string.IsNullOrEmpty(ristorante.ImgLogo))
                 {
-                    var oldFileName = Path.GetFileName(new Uri(ristorante.ImgLogo).AbsolutePath);
-                    var oldFilePath = Path.Combine(
-                        Directory.GetCurrentDirectory(),
-                        "wwwroot",
-                        "images",
-                        "logo",
-                        oldFileName
-                    );
-
-                    ImgUploader.DeleteFile(oldFilePath);
+                    ImgUploader.DeleteFile("images/logo", ristorante.ImgLogo);
                     ristorante.ImgLogo = null;
                 }
 
@@ -441,20 +432,9 @@ namespace Back_End_Capstone.Controllers
 
                 var ImgUploader = new ImgUploader();
 
-                if (!string.IsNullOrEmpty(ristorante.ImgLogo))
+                if (!string.IsNullOrEmpty(ristorante.ImgCopertina))
                 {
-                    var oldFileName = Path.GetFileName(
-                        new Uri(ristorante.ImgCopertina).AbsolutePath
-                    );
-                    var oldFilePath = Path.Combine(
-                        Directory.GetCurrentDirectory(),
-                        "wwwroot",
-                        "images",
-                        "copertina",
-                        oldFileName
-                    );
-
-                    ImgUploader.DeleteFile(oldFilePath);
+                    ImgUploader.DeleteFile("images/copertina", ristorante.ImgCopertina);
                     ristorante.ImgCopertina = null;
                 }
 

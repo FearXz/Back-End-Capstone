@@ -22,11 +22,19 @@
             return $"{host}/{folderName}/{fileName}";
         }
 
-        public void DeleteFile(string filePath)
+        public void DeleteFile(string imgFolder, string imgPath)
         {
-            if (File.Exists(filePath))
+            var oldFileName = Path.GetFileName(new Uri(imgPath).AbsolutePath);
+            var oldFilePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                imgFolder,
+                oldFileName
+            );
+
+            if (File.Exists(oldFilePath))
             {
-                File.Delete(filePath);
+                File.Delete(oldFilePath);
             }
         }
     }
