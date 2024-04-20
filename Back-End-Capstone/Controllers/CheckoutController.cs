@@ -40,6 +40,15 @@ namespace Back_End_Capstone.Controllers
                 return BadRequest(ModelState);
             }
 
+            var ristorante = _db
+                .Ristoranti.Where(r => r.IdRistorante == request.idRistorante && r.IsAttivo)
+                .FirstOrDefault();
+
+            if (ristorante == null)
+            {
+                return NotFound();
+            }
+
             // Crea la lista degli articoli per la sessione di checkout
             var lineItems = request
                 .prodotti.Select(item => new SessionLineItemOptions
@@ -133,7 +142,7 @@ namespace Back_End_Capstone.Controllers
                     //var metadata = paymentIntent.Metadata;
                     var session = stripeEvent.Data.Object as Session;
                     var sessionId = session.Id;
-                    //   var paymentIntentId = session.PaymentIntentId;
+                    var paymentIntentId = session.PaymentIntentId;
 
                     // Cerca l'ordine nel database utilizzando l'ID della sessione di Stripe
                     var order = _db
@@ -142,9 +151,9 @@ namespace Back_End_Capstone.Controllers
 
                     if (order != null)
                     {
-                        // Aggiorna lo stato dell'ordine a isPagato = true
+                        // Aggiorna lo stato dell'ordine a isPagato = true e salva l'ID dell'intento di pagamento
                         order.IsPagato = true;
-                        // order.PaymentIntentId = paymentIntentId;
+                        order.PaymentIntentId = paymentIntentId;
                         _db.Ordini.Update(order);
                         _db.SaveChanges();
 

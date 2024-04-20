@@ -37,6 +37,7 @@ namespace Back_End_Capstone.Controllers
                     ristorante.IdAzienda,
                     ristorante.IdRistorante,
                     ristorante.NomeRistorante,
+                    ristorante.IsAttivo,
                     ristorante.Indirizzo,
                     ristorante.Citta,
                     ristorante.CAP,
@@ -87,6 +88,7 @@ namespace Back_End_Capstone.Controllers
                     ristorante.Indirizzo,
                     ristorante.Citta,
                     ristorante.CAP,
+                    ristorante.IsAttivo,
                     ristorante.Latitudine,
                     ristorante.Longitudine,
                     ristorante.Telefono,
@@ -230,6 +232,7 @@ namespace Back_End_Capstone.Controllers
                 ristorante.NomeRistorante = editObj.ristorante;
                 ristorante.Telefono = editObj.telefono;
                 ristorante.Descrizione = editObj.descrizione;
+                ristorante.TagRistorante = editObj.tag;
                 ristorante.OrarioApertura = TimeSpan.Parse(editObj.oraApertura);
                 ristorante.OrarioChiusura = TimeSpan.Parse(editObj.oraChiusura);
                 ristorante.Indirizzo = editObj.indirizzo;
@@ -445,6 +448,86 @@ namespace Back_End_Capstone.Controllers
                 );
 
                 _db.Ristoranti.Update(ristorante);
+                _db.SaveChanges();
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPut("updatelocalstatus")]
+        public IActionResult UpdateLocalStatus([FromBody] LocalStatusDto localStatus)
+        {
+            try
+            {
+                var IdAzienda = User.FindFirstValue(JwtRegisteredClaimNames.Jti);
+
+                if (IdAzienda == null)
+                {
+                    return BadRequest();
+                }
+
+                var ristorante = _db.Ristoranti.FirstOrDefault(r =>
+                    r.IdRistorante == localStatus.IdRistorante
+                    && r.IdAzienda == Convert.ToInt32(IdAzienda)
+                );
+
+                if (ristorante == null)
+                {
+                    return NotFound();
+                }
+
+                ristorante.IsAttivo = localStatus.IsAttivo;
+
+                _db.Ristoranti.Update(ristorante);
+                _db.SaveChanges();
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPost("newlocalpost")]
+        public IActionResult NewLocalPost([FromBody] NewLocalDto newLocal)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var IdAzienda = User.FindFirstValue(JwtRegisteredClaimNames.Jti);
+
+                if (IdAzienda == null)
+                {
+                    return BadRequest();
+                }
+
+                var ristorante = new Ristorante
+                {
+                    IdAzienda = Convert.ToInt32(IdAzienda),
+                    NomeRistorante = newLocal.NomeRistorante,
+                    Telefono = newLocal.Telefono,
+                    Descrizione = newLocal.Descrizione,
+                    TagRistorante = newLocal.TagRistorante,
+                    OrarioApertura = TimeSpan.Parse(newLocal.OraApertura),
+                    OrarioChiusura = TimeSpan.Parse(newLocal.OraChiusura),
+                    Indirizzo = newLocal.Indirizzo,
+                    Citta = newLocal.Citta,
+                    CAP = newLocal.Cap,
+                    Latitudine = newLocal.Latitudine,
+                    Longitudine = newLocal.Longitudine,
+                    IsAttivo = true,
+                };
+
+                _db.Ristoranti.Add(ristorante);
                 _db.SaveChanges();
 
                 return Ok();
