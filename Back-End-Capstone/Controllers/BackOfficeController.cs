@@ -633,5 +633,42 @@ namespace Back_End_Capstone.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+
+        [HttpGet("getprodottiristorante/{idRistorante}")]
+        public IActionResult GetProdottiRistorante(int idRistorante)
+        {
+            var IdAzienda = User.FindFirstValue(JwtRegisteredClaimNames.Jti);
+
+            if (IdAzienda == null)
+            {
+                return BadRequest();
+            }
+
+            var prodotti = _db
+                .ProdottiRistoranti.Where(p => p.IdRistorante == idRistorante)
+                .Select(p => new
+                {
+                    p.IdProdottoRistorante,
+                    p.NomeProdotto,
+                    p.DescrizioneProdotto,
+                    p.PrezzoProdotto,
+                    p.ImgProdotto,
+                    p.IsAttivo,
+                    CategoriaProdotto = p.ProdottoTipoProdotti.Select(cp => new
+                    {
+                        cp.IdTipoProdotto,
+                        cp.TipoProdotto.NomeTipoProdotto,
+                    }),
+                    Ingredienti = p.IngredientiProdottoRistorante.Select(ip => new
+                    {
+                        ip.IngredientiRistorante.IdIngrediente,
+                        ip.IngredientiRistorante.NomeIngrediente,
+                        ip.IngredientiRistorante.PrezzoIngrediente,
+                        ip.IngredientiRistorante.IsAttivo,
+                    }),
+                });
+
+            return Ok(prodotti);
+        }
     }
 }
