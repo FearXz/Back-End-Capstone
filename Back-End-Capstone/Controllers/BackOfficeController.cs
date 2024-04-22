@@ -596,5 +596,42 @@ namespace Back_End_Capstone.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+
+        [HttpPut("updateingredienti")]
+        public IActionResult UpdateIngredienti([FromBody] UpdateIngredientiDto updateIngredienti)
+        {
+            try
+            {
+                var IdAzienda = User.FindFirstValue(JwtRegisteredClaimNames.Jti);
+
+                if (IdAzienda == null)
+                {
+                    return BadRequest();
+                }
+
+                var ingrediente = _db.IngredientiRistoranti.FirstOrDefault(i =>
+                    i.IdIngrediente == updateIngredienti.IdIngrediente
+                    && i.IdRistorante == updateIngredienti.LocaleId
+                );
+
+                if (ingrediente == null)
+                {
+                    return NotFound();
+                }
+
+                ingrediente.NomeIngrediente = updateIngredienti.NomeIngrediente;
+                ingrediente.PrezzoIngrediente = updateIngredienti.PrezzoIngrediente;
+                ingrediente.IsAttivo = updateIngredienti.IsAttivo;
+
+                _db.IngredientiRistoranti.Update(ingrediente);
+                _db.SaveChanges();
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
     }
 }
