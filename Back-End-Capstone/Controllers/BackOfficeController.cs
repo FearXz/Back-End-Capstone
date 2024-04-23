@@ -670,5 +670,232 @@ namespace Back_End_Capstone.Controllers
 
             return Ok(prodotti);
         }
+
+        [HttpGet("gettipoprodotti")]
+        public IActionResult GetTipoProdotti()
+        {
+            var tipiProdotti = _db.TipiProdotti.Select(tp => new
+            {
+                tp.IdTipoProdotto,
+                tp.NomeTipoProdotto,
+            });
+
+            return Ok(tipiProdotti);
+        }
+
+        [HttpPost("newprodottopost")]
+        public IActionResult NewProdottoPost([FromBody] CreateProductDto newProduct)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var IdAzienda = User.FindFirstValue(JwtRegisteredClaimNames.Jti);
+
+                if (IdAzienda == null)
+                {
+                    return BadRequest();
+                }
+
+                // creo nuovo prodotto
+                var prodotto = new ProdottoRistorante
+                {
+                    IdRistorante = newProduct.IdRistorante,
+                    NomeProdotto = newProduct.NomeProdotto,
+                    PrezzoProdotto = newProduct.PrezzoProdotto,
+                    IsAttivo = newProduct.IsAttivo,
+                };
+
+                // controllo se è stato inserita una descrizione
+                if (newProduct.DescrizioneProdotto != null)
+                {
+                    prodotto.DescrizioneProdotto = newProduct.DescrizioneProdotto;
+                }
+
+                _db.ProdottiRistoranti.Add(prodotto);
+                _db.SaveChanges();
+
+                // controllo se è stato inserito un tipo di prodotto
+                if (newProduct.IdTipiProdotto != null)
+                {
+                    var tipoProdotto = new ProdottoTipoProdotto
+                    {
+                        IdProdottoRistorante = prodotto.IdProdottoRistorante,
+                        IdTipoProdotto = (int)newProduct.IdTipiProdotto,
+                    };
+
+                    _db.ProdottiTipiProdotti.Add(tipoProdotto);
+                    _db.SaveChanges();
+                }
+
+                // controllo se sono stati inseriti ingredienti
+                if (newProduct.IdIngredienti.Length > 0)
+                {
+                    foreach (int IdIngrediente in newProduct.IdIngredienti)
+                    {
+                        var ingredienteProdotto = new IngredientiProdottoRistorante
+                        {
+                            IdProdottoRistorante = prodotto.IdProdottoRistorante,
+                            IdIngredientiRistorante = IdIngrediente,
+                        };
+
+                        _db.IngredientiProdottiRistoranti.Add(ingredienteProdotto);
+                    }
+                    _db.SaveChanges();
+                }
+
+                return Ok(prodotto.IdProdottoRistorante);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPut("updateimgprodotto/{idProdotto}")]
+        public IActionResult UpdateImgProdotto([FromForm] IFormFile imgProdotto, int idProdotto)
+        {
+            try
+            {
+                var IdAzienda = User.FindFirstValue(JwtRegisteredClaimNames.Jti);
+
+                if (IdAzienda == null)
+                {
+                    return BadRequest();
+                }
+
+                var prodotto = _db.ProdottiRistoranti.FirstOrDefault(p =>
+                    p.IdProdottoRistorante == idProdotto
+                    && p.Ristorante.Azienda.IdAzienda == Convert.ToInt32(IdAzienda)
+                );
+
+                if (prodotto == null)
+                {
+                    return NotFound();
+                }
+
+                var ImgUploader = new ImgUploader();
+
+                if (!string.IsNullOrEmpty(prodotto.ImgProdotto))
+                {
+                    ImgUploader.DeleteFile("images/prodotti", prodotto.ImgProdotto);
+                    prodotto.ImgProdotto = null;
+                }
+
+                prodotto.ImgProdotto = ImgUploader.UploadFile(
+                    imgProdotto,
+                    "images/prodotti",
+                    HttpContext
+                );
+
+                _db.ProdottiRistoranti.Update(prodotto);
+                _db.SaveChanges();
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPut("updateprodotto")]
+        public IActionResult UpdateProdotto([FromBody] UpdateProductDto updateProduct)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var IdAzienda = User.FindFirstValue(JwtRegisteredClaimNames.Jti);
+
+                if (IdAzienda == null)
+                {
+                    return BadRequest();
+                }
+
+                var prodotto = _db.ProdottiRistoranti.FirstOrDefault(p =>
+                    p.IdProdottoRistorante == updateProduct.IdProdottoRistorante
+                    && p.Ristorante.Azienda.IdAzienda == Convert.ToInt32(IdAzienda)
+                );
+
+                if (prodotto == null)
+                {
+                    return NotFound();
+                }
+
+                prodotto.NomeProdotto = updateProduct.NomeProdotto;
+                prodotto.PrezzoProdotto = updateProduct.PrezzoProdotto;
+                prodotto.IsAttivo = updateProduct.IsAttivo;
+
+                if (updateProduct.DescrizioneProdotto != null)
+                {
+                    prodotto.DescrizioneProdotto = updateProduct.DescrizioneProdotto;
+                }
+
+                _db.ProdottiRistoranti.Update(prodotto);
+                _db.SaveChanges();
+
+                if (updateProduct.IdTipiProdotto != null)
+                {
+                    var tipoProdotto = _db
+                        .ProdottiTipiProdotti.Where(tp =>
+                            tp.IdProdottoRistorante == updateProduct.IdProdottoRistorante
+                        )
+                        .ToList();
+
+                    if (tipoProdotto != null)
+                    {
+                        _db.ProdottiTipiProdotti.RemoveRange(tipoProdotto);
+                    }
+
+                    var nuovoTipoProdotto = new ProdottoTipoProdotto
+                    {
+                        IdProdottoRistorante = updateProduct.IdProdottoRistorante,
+                        IdTipoProdotto = (int)updateProduct.IdTipiProdotto,
+                    };
+
+                    _db.ProdottiTipiProdotti.Add(nuovoTipoProdotto);
+                    _db.SaveChanges();
+                }
+
+                if (updateProduct.IdIngredienti.Length > 0)
+                {
+                    var ingredientiProdotto = _db
+                        .IngredientiProdottiRistoranti.Where(ip =>
+                            ip.IdProdottoRistorante == updateProduct.IdProdottoRistorante
+                        )
+                        .ToList();
+
+                    if (ingredientiProdotto.Any())
+                    {
+                        _db.IngredientiProdottiRistoranti.RemoveRange(ingredientiProdotto);
+                    }
+
+                    foreach (int IdIngrediente in updateProduct.IdIngredienti)
+                    {
+                        var nuovoIngredienteProdotto = new IngredientiProdottoRistorante
+                        {
+                            IdProdottoRistorante = updateProduct.IdProdottoRistorante,
+                            IdIngredientiRistorante = IdIngrediente,
+                        };
+
+                        _db.IngredientiProdottiRistoranti.Add(nuovoIngredienteProdotto);
+                    }
+
+                    _db.SaveChanges();
+                }
+                return Ok(updateProduct.IdProdottoRistorante);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
     }
 }
